@@ -1,0 +1,13 @@
+/public
+  /assets
+    /js
+      firebase-config.js
+      auth.js
+      bookings.js
+      dashboard.js
+  /pages
+    /dashboard
+      index.html
+    login.html
+    register.html
+index.html

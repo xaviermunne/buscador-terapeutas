@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!--#include virtual="partials/head.html" -->
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+    <!--#include virtual="partials/navbar.html" -->
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-16 md:py-24">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Encuentra al terapeuta natural perfecto para ti</h1>
+                <p class="text-xl mb-8 opacity-90">Reserva citas fácilmente con los mejores profesionales de terapias naturales en tu zona.</p>
+                <div class="bg-white rounded-lg p-1 flex max-w-xl">
+                    <select id="therapy-search" class="flex-grow px-4 py-3 text-gray-800 focus:outline-none rounded-l bg-white" aria-label="Seleccionar terapia">
+                        <option value="">Todas las terapias</option>
+                        <option value="Naturopatía">Naturopatía</option>
+                        <option value="Acupuntura">Acupuntura</option>
+                        <option value="Osteopatía">Osteopatía</option>
+                        <option value="Reiki">Reiki</option>
+                        <option value="Quiromasaje">Quiromasaje</option>
+                        <option value="Flores de Bach">Flores de Bach</option>
+                        <option value="Medicina China">Medicina China</option>
+                        <option value="Reflexología">Reflexología</option>
+                    </select>
+                    <select id="location-search" class="w-1/3 px-4 py-3 text-gray-800 focus:outline-none border-l border-gray-200 bg-white" aria-label="Seleccionar ubicación">
+                        <option value="">Toda España</option>
+                        <option value="Madrid">Madrid</option>
+                        <option value="Barcelona">Barcelona</option>
+                        <option value="Valencia">Valencia</option>
+                        <option value="Sevilla">Sevilla</option>
+                        <option value="Zaragoza">Zaragoza</option>
+                        <option value="Málaga">Málaga</option>
+                        <option value="Murcia">Murcia</option>
+                        <option value="Palma de Mallorca">Palma de Mallorca</option>
+                        <option value="Las Palmas">Las Palmas</option>
+                        <option value="Bilbao">Bilbao</option>
+                        <option value="Alicante">Alicante</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Valladolid">Valladolid</option>
+                        <option value="Vigo">Vigo</option>
+                        <option value="Gijón">Gijón</option>
+                        <option value="Hospitalet">Hospitalet</option>
+                        <option value="La Coruña">La Coruña</option>
+                        <option value="Granada">Granada</option>
+                        <option value="Vitoria">Vitoria</option>
+                        <option value="Elche">Elche</option>
+                        <option value="Oviedo">Oviedo</option>
+                        <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+                        <option value="Pamplona">Pamplona</option>
+                        <option value="Santander">Santander</option>
+                    </select>
+                    <button id="search-button" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-r">
+                        <i class="fas fa-search" aria-hidden="true"></i> <span>Buscar</span>
+                    </button>
+                </div>
+                <div class="mt-4 flex justify-center gap-4">
+                    <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-video mr-2" aria-hidden="true"></i> Sesión Online
+                    </button>
+                    <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-clinic-medical mr-2" aria-hidden="true"></i> Sesión Presencial
+                    </button>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-2 justify-center">
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Acupuntura</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Naturopatía</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Osteopatía</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Reiki</span>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                     alt="Terapeuta natural realizando un masaje" 
+                     class="rounded-lg shadow-2xl w-full max-w-md"
+                     loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map-section" class="hidden py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Terapeutas cerca de ti</h2>
+                <button id="close-map" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar mapa">
+                    <i class="fas fa-times" aria-hidden="true"></i> Cerrar mapa
+                </button>
+            </div>
+            <div id="map" class="h-96 w-full rounded-lg shadow" aria-label="Mapa de terapeutas"></div>
+        </div>
+    </section>
+
+    <!-- Popular Therapies -->
+    <section class="py-16 bg-white" aria-labelledby="popular-therapies-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="popular-therapies-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Terapias Naturales Populares</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-spa text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Naturopatía</h3>
+                    <p class="text-gray-600 text-sm">Medicina natural que estimula la capacidad curativa del cuerpo.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-acorn text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Acupuntura</h3>
+                    <p class="text-gray-600 text-sm">Terapia milenaria que equilibra la energía mediante agujas.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-hands text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Osteopatía</h3>
+                    <p class="text-gray-600 text-sm">Enfoque manual para el tratamiento de alteraciones músculo-esqueléticas.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-hand-holding-heart text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Reiki</h3>
+                    <p class="text-gray-600 text-sm">Sanación energética mediante la imposición de manos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-16 bg-gray-50" aria-labelledby="how-it-works-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="how-it-works-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Cómo funciona NaturoCare</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-search text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">1. Encuentra tu terapeuta</h3>
+                    <p class="text-gray-600">Busca por especialidad, ubicación o valoraciones y encuentra al profesional ideal.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-calendar-check text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">2. Reserva tu cita</h3>
+                    <p class="text-gray-600">Elige día y hora que mejor te convenga y reserva al instante.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-heart text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">3. Disfruta de tu terapia</h3>
+                    <p class="text-gray-600">Asiste a tu cita y comienza tu camino hacia el bienestar natural.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Therapists -->
+    <section class="py-16 bg-white" aria-labelledby="featured-therapists-heading">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 id="featured-therapists-heading" class="text-3xl font-bold text-gray-800">Terapeutas Destacados</h2>
+                <a href="terapeutas.html" class="text-green-600 hover:text-green-800 font-medium">Ver todos <i class="fas fa-arrow-right ml-1" aria-hidden="true"></i></a>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Therapist Card 1 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Dra. Elena Martínez" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Dra. Elena Martínez</h3>
+                                <p class="text-green-600">Naturopatía · Acupuntura</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">4.9</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Madrid Centro · A 1.2 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Primera consulta gratis</span>
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Video consulta</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="text-gray-500 line-through text-sm">€60</span>
+                                <span class="font-bold text-lg ml-2">€45</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Dra. Elena Martínez">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Therapist Card 2 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2b6d2ff1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Carlos Rodríguez" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Carlos Rodríguez</h3>
+                                <p class="text-green-600">Osteopatía · Quiromasaje</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">4.8</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Barcelona · A 3.5 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Descuento pack 5 sesiones</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-lg">€55</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Carlos Rodríguez">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Therapist Card 3 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Laura Fernández" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Laura Fernández</h3>
+                                <p class="text-green-600">Reiki · Flores de Bach</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">5.0</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Valencia · A 2.1 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Video consulta</span>
+                            <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded">Terapia a domicilio</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-lg">€40</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Laura Fernández">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-green-50" aria-labelledby="testimonials-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="testimonials-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Lo que dicen nuestros pacientes</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Después de años con dolores de cabeza crónicos, la Dra. Martínez encontró la causa y me ayudó con un tratamiento natural. Ahora tengo una calidad de vida que no recordaba."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">María G.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Naturopatía</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Las sesiones de osteopatía con Carlos han sido un antes y después para mis problemas de espalda. Profesional, cercano y con un trato excepcional. Totalmente recomendable."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Javier L." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">Javier L.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Osteopatía</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Laura me ayudó a superar una etapa de mucha ansiedad con Reiki y Flores de Bach. Su sensibilidad y profesionalismo hacen que cada sesión sea una experiencia transformadora."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sofía R." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">Sofía R.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Reiki</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-green-800 text-white" aria-labelledby="cta-heading">
+        <div class="container mx-auto px-4 text-center">
+            <h2 id="cta-heading" class="text-3xl md:text-4xl font-bold mb-6">¿Eres terapeuta natural?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Únete a nuestra plataforma y llega a más pacientes que buscan tu especialidad.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="bg-white text-green-800 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold">
+                    Regístrate como profesional
+                </button>
+                <button class="border-2 border-white hover:bg-white/10 px-8 py-3 rounded-lg font-semibold">
+                    Más información
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!--#include virtual="partials/footer.html" -->
+    <!--#include virtual="partials/login-modal.html" -->
+    <!--#include virtual="partials/register-modal.html" -->
+    <!--#include virtual="partials/booking-modal.html" -->
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+</html>

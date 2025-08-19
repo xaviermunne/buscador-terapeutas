@@ -1,0 +1,42 @@
+<nav class="sticky-nav bg-white/90 shadow-sm py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-leaf text-3xl text-green-600" aria-hidden="true"></i>
+            <span class="text-xl font-bold text-green-800">NaturoCare</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+            <a href="index.html" class="text-gray-700 hover:text-green-600 transition-all">Inicio</a>
+            <a href="terapeutas.html" class="text-green-600 font-medium transition-all">Terapeutas</a>
+            <a href="terapias.html" class="text-gray-700 hover:text-green-600 transition-all">Terapias</a>
+            <a href="blog.html" class="text-gray-700 hover:text-green-600 transition-all">Blog</a>
+            <a href="contacto.html" class="text-gray-700 hover:text-green-600 transition-all">Contacto</a>
+        </div>
+        <div class="flex items-center space-x-4" id="auth-buttons">
+            <button id="open-login" class="hidden md:block px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                Iniciar sesión
+            </button>
+            <button id="open-register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all">
+                Regístrate
+            </button>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700" aria-label="Menú móvil">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
+        <a href="#" class="block py-2 text-gray-700 hover:text-green-600">Inicio</a>
+        <a href="terapeutas.html" class="block py-2 text-green-600 font-medium">Terapeutas</a>
+        <a href="terapias.html" class="block py-2 text-gray-700 hover:text-green-600">Terapias</a>
+        <a href="blog.html" class="block py-2 text-gray-700 hover:text-green-600">Blog</a>
+        <a href="contacto.html" class="block py-2 text-gray-700 hover:text-green-600">Contacto</a>
+        <div class="flex space-x-2 py-2">
+            <button id="mobile-login" class="w-1/2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-600">
+                Iniciar sesión
+            </button>
+            <button id="mobile-register" class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                Regístrate
+            </button>
+        </div>
+    </div>
+</nav>

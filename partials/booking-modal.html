@@ -1,0 +1,121 @@
+<div id="booking-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" aria-hidden="true">
+    <div class="booking-modal bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Reservar cita</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar modal de reserva">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                         alt="Terapeuta" 
+                         class="w-16 h-16 rounded-full object-cover mr-4"
+                         loading="lazy">
+                    <div>
+                        <h4 id="modal-therapist-name" class="font-bold">Dra. Elena Martínez</h4>
+                        <p class="text-green-600 text-sm">Naturopatía · Acupuntura</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-2">Selecciona fecha</label>
+                <div class="grid grid-cols-7 gap-2 mb-4">
+                    <div class="text-center text-gray-500 text-sm">L</div>
+                    <div class="text-center text-gray-500 text-sm">M</div>
+                    <div class="text-center text-gray-500 text-sm">X</div>
+                    <div class="text-center text-gray-500 text-sm">J</div>
+                    <div class="text-center text-gray-500 text-sm">V</div>
+                    <div class="text-center text-gray-500 text-sm">S</div>
+                    <div class="text-center text-gray-500 text-sm">D</div>
+                    
+                    <!-- Empty days -->
+                    <div class="h-8"></div>
+                    <div class="h-8"></div>
+                    <div class="h-8"></div>
+                    
+                    <!-- Days -->
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">1</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">2</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">3</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">4</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full bg-green-600 text-white">5</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">6</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">7</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">8</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">9</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">10</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">11</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">12</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">13</button>
+                    </div>
+                    <div class="text-center">
+                        <button class="w-8 h-8 rounded-full hover:bg-green-100">14</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-2">Horarios disponibles</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">09:00</button>
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">10:30</button>
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">12:00</button>
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">15:30</button>
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">17:00</button>
+                    <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">18:30</button>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-2">Tipo de consulta</label>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="radio" id="presencial" name="consulta" class="mr-2" checked>
+                        <label for="presencial">Presencial (€45)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="radio" id="video" name="consulta" class="mr-2">
+                        <label for="video">Video consulta (€40)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label for="notes" class="block text-gray-700 font-medium mb-2">Notas adicionales (opcional)</label>
+                <textarea id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+            </div>
+            
+            <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold">
+                Confirmar reserva
+            </button>
+        </div>
+    </div>
+</div>

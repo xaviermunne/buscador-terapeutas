@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaturoCare - Encuentra tu terapeuta natural</title>
+    <meta name="description" content="Plataforma para encontrar y reservar citas con terapeutas naturales certificados">
+    
+    <!-- Preconexión para mejorar performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            600: '#38a169',
+                            700: '#2f855a',
+                            800: '#276749',
+                        },
+                        secondary: {
+                            100: '#e6fffa',
+                            400: '#38b2ac',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUG_4vomY8-PgALBQ_H5j7WM_rysykK4c&libraries=places&callback=initMap" async defer></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #38a169;
+            --secondary-color: #38b2ac;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        
+        .therapy-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #e6fffa;
+            color: #38b2ac;
+            margin-bottom: 1rem;
+        }
+        
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .sticky-nav.scrolled {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .booking-modal {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mejoras de accesibilidad */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Mejoras para dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #111827;
+                color: #f3f4f6;
+            }
+            
+            .bg-white {
+                background-color: #1f2937 !important;
+                color: #f3f4f6 !important;
+            }
+            
+            .text-gray-700, .text-gray-600 {
+                color: #d1d5db !important;
+            }
+            
+            .border-gray-300 {
+                border-color: #4b5563 !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <nav class="sticky-nav bg-white/90 shadow-sm py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-leaf text-3xl text-green-600" aria-hidden="true"></i>
+                <span class="text-xl font-bold text-green-800">NaturoCare</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-green-600 transition-all">Inicio</a>
+                <a href="terapeutas.html" class="text-green-600 font-medium transition-all">Terapeutas</a>
+                <a href="terapias.html" class="text-gray-700 hover:text-green-600 transition-all">Terapias</a>
+                <a href="blog.html" class="text-gray-700 hover:text-green-600 transition-all">Blog</a>
+                <a href="contacto.html" class="text-gray-700 hover:text-green-600 transition-all">Contacto</a>
+            </div>
+            <div class="flex items-center space-x-4" id="auth-buttons">
+                <button id="open-login" class="hidden md:block px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                    Iniciar sesión
+                </button>
+                <button id="open-register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all">
+                    Regístrate
+                </button>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700" aria-label="Menú móvil">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
+            <a href="#" class="block py-2 text-gray-700 hover:text-green-600">Inicio</a>
+            <a href="terapeutas.html" class="block py-2 text-green-600 font-medium">Terapeutas</a>
+            <a href="terapias.html" class="block py-2 text-gray-700 hover:text-green-600">Terapias</a>
+            <a href="blog.html" class="block py-2 text-gray-700 hover:text-green-600">Blog</a>
+            <a href="contacto.html" class="block py-2 text-gray-700 hover:text-green-600">Contacto</a>
+            <div class="flex space-x-2 py-2">
+                <button id="mobile-login" class="w-1/2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-600">
+                    Iniciar sesión
+                </button>
+                <button id="mobile-register" class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                    Regístrate
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-16 md:py-24">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Encuentra al terapeuta natural perfecto para ti</h1>
+                <p class="text-xl mb-8 opacity-90">Reserva citas fácilmente con los mejores profesionales de terapias naturales en tu zona.</p>
+                <div class="bg-white rounded-lg p-1 flex max-w-xl">
+                    <select id="therapy-search" class="flex-grow px-4 py-3 text-gray-800 focus:outline-none rounded-l bg-white" aria-label="Seleccionar terapia">
+                        <option value="">Todas las terapias</option>
+                        <option value="Naturopatía">Naturopatía</option>
+                        <option value="Acupuntura">Acupuntura</option>
+                        <option value="Osteopatía">Osteopatía</option>
+                        <option value="Reiki">Reiki</option>
+                        <option value="Quiromasaje">Quiromasaje</option>
+                        <option value="Flores de Bach">Flores de Bach</option>
+                        <option value="Medicina China">Medicina China</option>
+                        <option value="Reflexología">Reflexología</option>
+                    </select>
+                    <select id="location-search" class="w-1/3 px-4 py-3 text-gray-800 focus:outline-none border-l border-gray-200 bg-white" aria-label="Seleccionar ubicación">
+                        <option value="">Toda España</option>
+                        <option value="Madrid">Madrid</option>
+                        <option value="Barcelona">Barcelona</option>
+                        <option value="Valencia">Valencia</option>
+                        <option value="Sevilla">Sevilla</option>
+                        <option value="Zaragoza">Zaragoza</option>
+                        <option value="Málaga">Málaga</option>
+                        <option value="Murcia">Murcia</option>
+                        <option value="Palma de Mallorca">Palma de Mallorca</option>
+                        <option value="Las Palmas">Las Palmas</option>
+                        <option value="Bilbao">Bilbao</option>
+                        <option value="Alicante">Alicante</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Valladolid">Valladolid</option>
+                        <option value="Vigo">Vigo</option>
+                        <option value="Gijón">Gijón</option>
+                        <option value="Hospitalet">Hospitalet</option>
+                        <option value="La Coruña">La Coruña</option>
+                        <option value="Granada">Granada</option>
+                        <option value="Vitoria">Vitoria</option>
+                        <option value="Elche">Elche</option>
+                        <option value="Oviedo">Oviedo</option>
+                        <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+                        <option value="Pamplona">Pamplona</option>
+                        <option value="Santander">Santander</option>
+                    </select>
+                    <button id="search-button" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-r">
+                        <i class="fas fa-search" aria-hidden="true"></i> <span>Buscar</span>
+                    </button>
+                </div>
+                <div class="mt-4 flex justify-center gap-4">
+                    <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-video mr-2" aria-hidden="true"></i> Sesión Online
+                    </button>
+                    <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-clinic-medical mr-2" aria-hidden="true"></i> Sesión Presencial
+                    </button>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-2 justify-center">
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Acupuntura</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Naturopatía</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Osteopatía</span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">Reiki</span>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                     alt="Terapeuta natural realizando un masaje" 
+                     class="rounded-lg shadow-2xl w-full max-w-md"
+                     loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map-section" class="hidden py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Terapeutas cerca de ti</h2>
+                <button id="close-map" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar mapa">
+                    <i class="fas fa-times" aria-hidden="true"></i> Cerrar mapa
+                </button>
+            </div>
+            <div id="map" class="h-96 w-full rounded-lg shadow" aria-label="Mapa de terapeutas"></div>
+        </div>
+    </section>
+
+    <!-- Popular Therapies -->
+    <section class="py-16 bg-white" aria-labelledby="popular-therapies-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="popular-therapies-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Terapias Naturales Populares</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-spa text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Naturopatía</h3>
+                    <p class="text-gray-600 text-sm">Medicina natural que estimula la capacidad curativa del cuerpo.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-acorn text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Acupuntura</h3>
+                    <p class="text-gray-600 text-sm">Terapia milenaria que equilibra la energía mediante agujas.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-hands text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Osteopatía</h3>
+                    <p class="text-gray-600 text-sm">Enfoque manual para el tratamiento de alteraciones músculo-esqueléticas.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl text-center card-hover transition-all cursor-pointer" tabindex="0">
+                    <div class="therapy-icon mx-auto">
+                        <i class="fas fa-hand-holding-heart text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Reiki</h3>
+                    <p class="text-gray-600 text-sm">Sanación energética mediante la imposición de manos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-16 bg-gray-50" aria-labelledby="how-it-works-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="how-it-works-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Cómo funciona NaturoCare</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-search text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">1. Encuentra tu terapeuta</h3>
+                    <p class="text-gray-600">Busca por especialidad, ubicación o valoraciones y encuentra al profesional ideal.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-calendar-check text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">2. Reserva tu cita</h3>
+                    <p class="text-gray-600">Elige día y hora que mejor te convenga y reserva al instante.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                        <i class="fas fa-heart text-2xl" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="font-semibold text-xl mb-2">3. Disfruta de tu terapia</h3>
+                    <p class="text-gray-600">Asiste a tu cita y comienza tu camino hacia el bienestar natural.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Therapists -->
+    <section class="py-16 bg-white" aria-labelledby="featured-therapists-heading">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 id="featured-therapists-heading" class="text-3xl font-bold text-gray-800">Terapeutas Destacados</h2>
+                <a href="terapeutas.html" class="text-green-600 hover:text-green-800 font-medium">Ver todos <i class="fas fa-arrow-right ml-1" aria-hidden="true"></i></a>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Therapist Card 1 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Dra. Elena Martínez" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Dra. Elena Martínez</h3>
+                                <p class="text-green-600">Naturopatía · Acupuntura</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">4.9</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Madrid Centro · A 1.2 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Primera consulta gratis</span>
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Video consulta</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="text-gray-500 line-through text-sm">€60</span>
+                                <span class="font-bold text-lg ml-2">€45</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Dra. Elena Martínez">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Therapist Card 2 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2b6d2ff1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Carlos Rodríguez" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Carlos Rodríguez</h3>
+                                <p class="text-green-600">Osteopatía · Quiromasaje</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">4.8</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Barcelona · A 3.5 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Descuento pack 5 sesiones</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-lg">€55</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Carlos Rodríguez">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Therapist Card 3 -->
+                <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Laura Fernández" 
+                             class="w-full h-48 object-cover"
+                             loading="lazy">
+                        <div class="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow">
+                            <button aria-label="Añadir a favoritos">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-xl">Laura Fernández</h3>
+                                <p class="text-green-600">Reiki · Flores de Bach</p>
+                            </div>
+                            <div class="flex items-center bg-green-50 px-2 py-1 rounded">
+                                <i class="fas fa-star text-yellow-400 mr-1" aria-hidden="true"></i>
+                                <span class="font-medium">5.0</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-2 text-gray-500">
+                            <i class="fas fa-map-marker-alt mr-2" aria-hidden="true"></i>
+                            <span>Valencia · A 2.1 km</span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Video consulta</span>
+                            <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded">Terapia a domicilio</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-lg">€40</span>
+                            </div>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm therapist-book-btn" data-therapist="Laura Fernández">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-green-50" aria-labelledby="testimonials-heading">
+        <div class="container mx-auto px-4">
+            <h2 id="testimonials-heading" class="text-3xl font-bold text-center mb-12 text-gray-800">Lo que dicen nuestros pacientes</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Después de años con dolores de cabeza crónicos, la Dra. Martínez encontró la causa y me ayudó con un tratamiento natural. Ahora tengo una calidad de vida que no recordaba."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María G." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">María G.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Naturopatía</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Las sesiones de osteopatía con Carlos han sido un antes y después para mis problemas de espalda. Profesional, cercano y con un trato excepcional. Totalmente recomendable."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Javier L." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">Javier L.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Osteopatía</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex mb-4">
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                    </div>
+                    <blockquote class="text-gray-600 mb-6">
+                        <p>"Laura me ayudó a superar una etapa de mucha ansiedad con Reiki y Flores de Bach. Su sensibilidad y profesionalismo hacen que cada sesión sea una experiencia transformadora."</p>
+                    </blockquote>
+                    <div class="flex items-center">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sofía R." class="w-12 h-12 rounded-full mr-4" loading="lazy">
+                        <div>
+                            <h4 class="font-semibold">Sofía R.</h4>
+                            <p class="text-sm text-gray-500">Paciente de Reiki</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-green-800 text-white" aria-labelledby="cta-heading">
+        <div class="container mx-auto px-4 text-center">
+            <h2 id="cta-heading" class="text-3xl md:text-4xl font-bold mb-6">¿Eres terapeuta natural?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Únete a nuestra plataforma y llega a más pacientes que buscan tu especialidad.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="bg-white text-green-800 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold">
+                    Regístrate como profesional
+                </button>
+                <button class="border-2 border-white hover:bg-white/10 px-8 py-3 rounded-lg font-semibold">
+                    Más información
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-leaf text-3xl text-green-400" aria-hidden="true"></i>
+                        <span class="text-xl font-bold">NaturoCare</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">La plataforma líder para encontrar y reservar citas con terapeutas naturales certificados.</p>
+                    <div class="mb-6">
+                        <h4 class="text-white font-medium mb-3">Suscríbete a nuestro newsletter</h4>
+                        <form id="newsletter-form" class="flex">
+                            <input type="email" name="email" placeholder="Tu email" class="flex-grow px-3 py-2 rounded-l text-gray-800 focus:outline-none" required>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-r" aria-label="Suscribirse">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">NaturoCare</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Sobre nosotros</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Cómo funciona</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Prensa</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Trabaja con nosotros</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Descubre</h3>
+                    <ul class="space-y-2">
+                        <li><a href="terapeutas.html" class="text-gray-400 hover:text-white">Terapeutas</a></li>
+                        <li><a href="terapias.html" class="text-gray-400 hover:text-white">Terapias</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Centros</a></li>
+                        <li><a href="blog.html" class="text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Preguntas frecuentes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Términos y condiciones</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Política de privacidad</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Política de cookies</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Aviso legal</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 text-center text-gray-400">
+                <p>© 2023 NaturoCare. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" aria-hidden="true">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Iniciar sesión</h3>
+                <button id="close-login-modal" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar modal de inicio de sesión">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <form id="login-form" action="/login" method="POST">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 mb-2">Contraseña</label>
+                    <input type="password" id="password" name="password" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-all">
+                    Iniciar sesión
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">¿No tienes cuenta? <a href="#" id="show-register" class="text-green-600 hover:underline">Regístrate</a></p>
+                <p class="text-gray-600 mt-2"><a href="#" class="text-green-600 hover:underline">¿Olvidaste tu contraseña?</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" aria-hidden="true">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Crear cuenta</h3>
+                <button id="close-register-modal" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar modal de registro">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <form id="register-form" action="/register" method="POST">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="first-name" class="block text-gray-700 mb-2">Nombre</label>
+                        <input type="text" id="first-name" name="first_name" class="w-full px-3 py-2 border rounded" required>
+                    </div>
+                    <div>
+                        <label for="last-name" class="block text-gray-700 mb-2">Apellido</label>
+                        <input type="text" id="last-name" name="last_name" class="w-full px-3 py-2 border rounded" required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="register-email" class="block text-gray-700 mb-2">Email</label>
+                    <input type="email" id="register-email" name="email" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="register-password" class="block text-gray-700 mb-2">Contraseña</label>
+                    <input type="password" id="register-password" name="password" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div class="mb-6">
+                    <label for="confirm-password" class="block text-gray-700 mb-2">Confirmar contraseña</label>
+                    <input type="password" id="confirm-password" name="confirm_password" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" id="accept-terms" name="accept_terms" class="mr-2" required>
+                    <label for="accept-terms" class="text-sm text-gray-600">Acepto los <a href="#" class="text-green-600 hover:underline">Términos y Condiciones</a> y la <a href="#" class="text-green-600 hover:underline">Política de Privacidad</a></label>
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" id="newsletter-opt-in" name="newsletter_opt_in" class="mr-2" checked>
+                    <label for="newsletter-opt-in" class="text-sm text-gray-600">Quiero recibir el newsletter con consejos y ofertas</label>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-all">
+                    Crear cuenta
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">¿Ya tienes cuenta? <a href="#" id="show-login" class="text-green-600 hover:underline">Iniciar sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" aria-hidden="true">
+        <div class="booking-modal bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Reservar cita</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700" aria-label="Cerrar modal de reserva">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                             alt="Terapeuta" 
+                             class="w-16 h-16 rounded-full object-cover mr-4"
+                             loading="lazy">
+                        <div>
+                            <h4 id="modal-therapist-name" class="font-bold">Dra. Elena Martínez</h4>
+                            <p class="text-green-600 text-sm">Naturopatía · Acupuntura</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Selecciona fecha</label>
+                    <div class="grid grid-cols-7 gap-2 mb-4">
+                        <div class="text-center text-gray-500 text-sm">L</div>
+                        <div class="text-center text-gray-500 text-sm">M</div>
+                        <div class="text-center text-gray-500 text-sm">X</div>
+                        <div class="text-center text-gray-500 text-sm">J</div>
+                        <div class="text-center text-gray-500 text-sm">V</div>
+                        <div class="text-center text-gray-500 text-sm">S</div>
+                        <div class="text-center text-gray-500 text-sm">D</div>
+                        
+                        <!-- Empty days -->
+                        <div class="h-8"></div>
+                        <div class="h-8"></div>
+                        <div class="h-8"></div>
+                        
+                        <!-- Days -->
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">1</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">2</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">3</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">4</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full bg-green-600 text-white">5</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">6</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">7</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">8</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">9</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">10</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">11</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">12</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">13</button>
+                        </div>
+                        <div class="text-center">
+                            <button class="w-8 h-8 rounded-full hover:bg-green-100">14</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Horarios disponibles</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">09:00</button>
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">10:30</button>
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">12:00</button>
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">15:30</button>
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">17:00</button>
+                        <button class="py-2 px-3 border border-gray-300 rounded hover:bg-green-600 hover:text-white hover:border-green-600">18:30</button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Tipo de consulta</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <input type="radio" id="presencial" name="consulta" class="mr-2" checked>
+                            <label for="presencial">Presencial (€45)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="video" name="consulta" class="mr-2">
+                            <label for="video">Video consulta (€40)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="notes" class="block text-gray-700 font-medium mb-2">Notas adicionales (opcional)</label>
+                    <textarea id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+                </div>
+                
+                <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold">
+                    Confirmar reserva
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase (reemplaza con tus credenciales)
+        const firebaseConfig = {
+	  apiKey: "AIzaSyDfmgWWhJlccc02-j40-9tPsy4P9Vu8IW0",
+	  authDomain: "naturocare-ce0ca.firebaseapp.com",
+	  projectId: "naturocare-ce0ca",
+	  storageBucket: "naturocare-ce0ca.firebasestorage.app",
+	  messagingSenderId: "157295915835",
+	  appId: "1:157295915835:web:134faab4cf3158ab133d1e",
+	  measurementId: "G-8RDXGW5DC0"
+	};
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Variables globales
+        let map;
+        let markers = [];
+        const therapists = [
+            {
+                name: "Dra. Elena Martínez",
+                specialty: "Naturopatía · Acupuntura",
+                lat: 40.4168,
+                lng: -3.7038,
+                address: "Calle Gran Vía, 1, Madrid",
+                rating: 4.9,
+                price: 45,
+                therapies: ["Naturopatía", "Acupuntura", "Nutrición"],
+                available: ["09:00", "11:00", "16:00", "18:00"]
+            },
+            {
+                name: "Carlos Rodríguez",
+                specialty: "Osteopatía · Quiromasaje", 
+                lat: 41.3851,
+                lng: 2.1734,
+                address: "Passeig de Gràcia, 100, Barcelona",
+                rating: 4.8,
+                price: 55,
+                therapies: ["Osteopatía", "Quiromasaje", "Fisioterapia"],
+                available: ["10:00", "12:00", "15:00", "17:00"]
+            },
+            {
+                name: "Laura Fernández",
+                specialty: "Reiki · Flores de Bach",
+                lat: 39.4699,
+                lng: -0.3763,
+                address: "Calle Colón, 22, Valencia",
+                rating: 5.0,
+                price: 40,
+                therapies: ["Reiki", "Flores de Bach", "Meditación"],
+                available: ["09:30", "14:00", "16:30", "19:00"]
+            }
+        ];
+
+        // DOM Elements
+        const loginModal = document.getElementById("login-modal");
+        const registerModal = document.getElementById("register-modal");
+        const bookingModal = document.getElementById("booking-modal");
+        const mapSection = document.getElementById("map-section");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const modalTherapistName = document.getElementById("modal-therapist-name");
+
+        // Inicializar el mapa
+        function initMap(lat = 40.4168, lng = -3.7038) {
+            if (typeof google === 'undefined') {
+                console.error('Google Maps API no se ha cargado correctamente');
+                return;
+            }
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat, lng },
+                zoom: 12,
+                disableDefaultUI: true,
+                zoomControl: true,
+                styles: [
+                    {
+                        featureType: "poi",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
+            });
+
+            clearMarkers();
+            
+            therapists.forEach(therapist => {
+                const marker = new google.maps.Marker({
+                    position: { lat: therapist.lat, lng: therapist.lng },
+                    map,
+                    title: therapist.name,
+                    icon: {
+                        url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                    }
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="p-2">
+                            <h3 class="font-bold">${therapist.name}</h3>
+                            <p class="text-green-600">${therapist.specialty}</p>
+                            <p class="text-sm">${therapist.address}</p>
+                            <div class="flex items-center mt-1">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span>${therapist.rating}</span>
+                            </div>
+                            <button class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-sm" 
+                                    onclick="bookTherapist('${therapist.name}')">
+                                Reservar cita
+                            </button>
+                        </div>
+                    `
+                });
+                
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+                
+                markers.push(marker);
+            });
+        }
+
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+
+        function geocodeAddress(address, callback) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address }, (results, status) => {
+                if (status === "OK" && results[0]) {
+                    const location = results[0].geometry.location;
+                    callback(location.lat(), location.lng());
+                } else {
+                    alert("No se pudo encontrar la ubicación: " + status);
+                }
+            });
+        }
+
+        // Funciones de autenticación
+        async function handleLogin(email, password) {
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                return userCredential.user;
+            } catch (error) {
+                console.error("Error de autenticación:", error);
+                throw error;
+            }
+        }
+
+        async function handleRegistration(email, password, userData) {
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    ...userData,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                return userCredential.user;
+            } catch (error) {
+                console.error("Error de registro:", error);
+                throw error;
+            }
+        }
+
+        function updateNavForLoggedInUser(email) {
+            const authButtons = document.getElementById('auth-buttons');
+            authButtons.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=48bb78&color=fff" 
+                         alt="Avatar de usuario" 
+                         class="w-8 h-8 rounded-full">
+                    <span class="font-medium">${email.split('@')[0]}</span>
+                </div>
+                <button id="logout-btn" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    Cerrar sesión
+                </button>
+            `;
+            
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    window.location.reload();
+                });
+            });
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Booking modal functionality
+            const bookButtons = document.querySelectorAll('.therapist-book-btn');
+            const closeModal = document.getElementById('close-modal');
+
+            bookButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const therapistName = this.getAttribute('data-therapist');
+                    modalTherapistName.textContent = therapistName;
+                    bookingModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                bookingModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Close modal when clicking outside
+            bookingModal.addEventListener('click', function(e) {
+                if (e.target === bookingModal) {
+                    bookingModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Search functionality
+            document.getElementById("search-button").addEventListener("click", () => {
+                const location = document.getElementById("location-search").value;
+                const therapy = document.getElementById("therapy-search").value;
+                
+                if (location) {
+                    geocodeAddress(location, (lat, lng) => {
+                        initMap(lat, lng);
+                        mapSection.classList.remove("hidden");
+                        window.scrollTo({
+                            top: mapSection.offsetTop,
+                            behavior: "smooth"
+                        });
+                    });
+                } else {
+                    alert("Por favor ingresa una ubicación para buscar terapeutas");
+                }
+            });
+
+            // Close map
+            document.getElementById("close-map").addEventListener("click", () => {
+                mapSection.classList.add("hidden");
+            });
+
+            // Modal elements
+            const closeLoginModal = document.getElementById("close-login-modal");
+            const closeRegisterModal = document.getElementById("close-register-modal");
+            const showRegister = document.getElementById("show-register");
+            const showLogin = document.getElementById("show-login");
+            
+            // Open modals
+            document.getElementById("open-login").addEventListener("click", () => {
+                loginModal.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            });
+            
+            document.getElementById("open-register").addEventListener("click", () => {
+                registerModal.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            });
+            
+            document.getElementById("mobile-login").addEventListener("click", () => {
+                loginModal.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            });
+            
+            document.getElementById("mobile-register").addEventListener("click", () => {
+                registerModal.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            });
+
+            // Close modals
+            closeLoginModal.addEventListener("click", () => {
+                loginModal.classList.add("hidden");
+                document.body.style.overflow = "auto";
+            });
+
+            closeRegisterModal.addEventListener("click", () => {
+                registerModal.classList.add("hidden");
+                document.body.style.overflow = "auto";
+            });
+
+            // Switch between modals
+            showRegister.addEventListener("click", (e) => {
+                e.preventDefault();
+                loginModal.classList.add("hidden");
+                registerModal.classList.remove("hidden");
+            });
+
+            showLogin.addEventListener("click", (e) => {
+                e.preventDefault();
+                registerModal.classList.add("hidden");
+                loginModal.classList.remove("hidden");
+            });
+
+            // Handle login form submission
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = this.querySelector('#email').value;
+                const password = this.querySelector('#password').value;
+                
+                try {
+                    await handleLogin(email, password);
+                    loginModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    updateNavForLoggedInUser(email);
+                } catch (error) {
+                    alert('Error al iniciar sesión: ' + error.message);
+                }
+            });
+
+            // Handle register form submission
+            document.getElementById('register-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const firstName = this.querySelector('#first-name').value;
+                const lastName = this.querySelector('#last-name').value;
+                const email = this.querySelector('#register-email').value;
+                const password = this.querySelector('#register-password').value;
+                const confirmPassword = this.querySelector('#confirm-password').value;
+                const acceptTerms = this.querySelector('#accept-terms').checked;
+                const newsletterOptIn = this.querySelector('#newsletter-opt-in').checked;
+                
+                // Validaciones
+                if (password !== confirmPassword) {
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    alert('La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+
+                if (!email.includes('@') || !email.includes('.')) {
+                    alert('Por favor introduce un email válido');
+                    return;
+                }
+
+                if (!acceptTerms) {
+                    alert('Debes aceptar los términos y condiciones');
+                    return;
+                }
+
+                try {
+                    const userData = {
+                        firstName,
+                        lastName,
+                        email,
+                        newsletterOptIn,
+                        role: 'patient'
+                    };
+                    
+                    await handleRegistration(email, password, userData);
+                    
+                    alert('¡Registro exitoso! ' + 
+                        (newsletterOptIn ? 'Te has suscrito al newsletter.' : ''));
+                    
+                    registerModal.classList.add('hidden');
+                    
+                    // Auto-login after registration
+                    document.querySelector('#email').value = email;
+                    document.querySelector('#password').value = password;
+                    document.getElementById('login-form').dispatchEvent(new Event('submit'));
+                } catch (error) {
+                    alert('Error en el registro: ' + error.message);
+                }
+            });
+
+            // Handle newsletter form submission
+            document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[name="email"]').value;
+                
+                if (!email || !email.includes('@')) {
+                    alert('Por favor introduce un email válido');
+                    return;
+                }
+
+                // Guardar en Firestore
+                db.collection('newsletter').add({
+                    email: email,
+                    subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    alert('¡Gracias por suscribirte a nuestro newsletter!');
+                    this.reset();
+                })
+                .catch(error => {
+                    console.error("Error al suscribirse:", error);
+                    alert('Hubo un error al procesar tu suscripción');
+                });
+            });
+
+            // Session type buttons functionality
+            document.querySelectorAll('.bg-white\\/20').forEach(button => {
+                button.addEventListener('click', function() {
+                    const isOnline = this.textContent.includes('Online');
+                    alert(`Buscando sesiones ${isOnline ? 'online' : 'presenciales'}...`);
+                });
+            });
+
+            // Sticky nav on scroll
+            window.addEventListener('scroll', function() {
+                const nav = document.querySelector('.sticky-nav');
+                if (window.scrollY > 10) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    updateNavForLoggedInUser(user.email);
+                }
+            });
+        });
+
+        // Global function to book therapist from map info window
+        window.bookTherapist = function(therapistName) {
+            const therapist = therapists.find(t => t.name === therapistName);
+            if (therapist) {
+                modalTherapistName.textContent = therapist.name;
+                bookingModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+    </script>
+</body>
+</html>

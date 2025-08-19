@@ -1,0 +1,89 @@
+:root {
+    --primary-color: #38a169;
+    --secondary-color: #38b2ac;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+}
+
+.hero-gradient {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.therapy-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #e6fffa;
+    color: #38b2ac;
+    margin-bottom: 1rem;
+}
+
+.sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.sticky-nav.scrolled {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.booking-modal {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mejoras de accesibilidad */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Mejoras para dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #111827;
+        color: #f3f4f6;
+    }
+    
+    .bg-white {
+        background-color: #1f2937 !important;
+        color: #f3f4f6 !important;
+    }
+    
+    .text-gray-700, .text-gray-600 {
+        color: #d1d5db !important;
+    }
+    
+    .border-gray-300 {
+        border-color: #4b5563 !important;
+    }
+}

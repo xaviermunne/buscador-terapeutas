@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog de Terapias Naturales | NaturoCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .category-badge {
+            transition: all 0.3s ease;
+        }
+        .article-card:hover .category-badge {
+            background-color: #38a169;
+            color: white;
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Navbar (igual que en base.html) -->
+    <nav class="sticky-nav bg-white/90 shadow-sm py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-leaf text-3xl text-green-600"></i>
+                <span class="text-xl font-bold text-green-800">NaturoCare</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-green-600 transition-all">Inicio</a>
+                <a href="terapeutas.html" class="text-gray-700 hover:text-green-600 transition-all">Terapeutas</a>
+                <a href="terapias.html" class="text-gray-700 hover:text-green-600 transition-all">Terapias</a>
+                <a href="blog.html" class="text-green-600 font-medium transition-all">Blog</a>
+                <a href="contacto.html" class="text-gray-700 hover:text-green-600 transition-all">Contacto</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="open-login" class="hidden md:block px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                    Iniciar sesión
+                </button>
+                <button id="open-register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all">
+                    Regístrate
+                </button>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
+            <a href="index.html" class="block py-2 text-gray-700 hover:text-green-600">Inicio</a>
+            <a href="terapeutas.html" class="block py-2 text-gray-700 hover:text-green-600">Terapeutas</a>
+            <a href="terapias.html" class="block py-2 text-gray-700 hover:text-green-600">Terapias</a>
+            <a href="blog.html" class="block py-2 text-green-600 font-medium">Blog</a>
+            <a href="contacto.html" class="block py-2 text-gray-700 hover:text-green-600">Contacto</a>
+            <div class="flex space-x-2 py-2">
+                <button id="mobile-login" class="w-1/2 px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-600">
+                    Iniciar sesión
+                </button>
+                <button id="mobile-register" class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                    Regístrate
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section del Blog -->
+    <section class="bg-gradient-to-r from-green-500 to-green-600 text-white py-16 md:py-24">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Blog de NaturoCare</h1>
+            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Descubre artículos, consejos y las últimas novedades sobre terapias naturales y bienestar integral.</p>
+            <div class="max-w-xl mx-auto relative">
+                <input type="text" placeholder="Buscar artículos..." class="w-full px-6 py-3 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-400">
+                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 hover:bg-green-700 text-white p-2 rounded-full">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorías -->
+    <section class="py-8 bg-white border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="category-filter px-4 py-2 rounded-full bg-green-600 text-white" data-category="all">
+                    Todos
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="naturopatia">
+                    Naturopatía
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="acupuntura">
+                    Acupuntura
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="reiki">
+                    Reiki
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="alimentacion">
+                    Alimentación
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="consejos">
+                    Consejos
+                </button>
+                <button class="category-filter px-4 py-2 rounded-full bg-gray-100 hover:bg-green-100 text-gray-800" data-category="investigacion">
+                    Investigación
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artículos Destacados -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8 flex items-center">
+                <span class="gradient-text">Artículos Destacados</span>
+                <span class="ml-4 h-px flex-1 bg-gray-300"></span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Artículo Destacado 1 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1505576399279-565b52d4ac71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Plantas medicinales" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Naturopatía</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>15 Junio 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>8 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">5 Plantas Medicinales para el Estrés y la Ansiedad</h3>
+                        <p class="text-gray-600 mb-4">Descubre cómo estas plantas pueden ayudarte a manejar el estrés diario de forma natural y sin efectos secundarios.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Dra. Ana López</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo Destacado 2 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1543357480-c60d400e2ef9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Acupuntura" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">Acupuntura</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>2 Junio 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>10 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Acupuntura para el Dolor Crónico: Lo que Dice la Ciencia</h3>
+                        <p class="text-gray-600 mb-4">Un análisis detallado de los estudios científicos que respaldan el uso de la acupuntura en el manejo del dolor crónico.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Dr. Carlos Mínguez</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo Destacado 3 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1520&q=80" alt="Meditación" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">Consejos</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>20 Mayo 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>6 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Rutina Matutina de 10 Minutos para Mejorar tu Energía</h3>
+                        <p class="text-gray-600 mb-4">Combinación de estiramientos, respiración y visualización para comenzar el día con vitalidad y enfoque.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Laura Fernández</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Todos los Artículos -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8 flex items-center">
+                <span class="gradient-text">Todos los Artículos</span>
+                <span class="ml-4 h-px flex-1 bg-gray-300"></span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Artículo 1 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Alimentos antiinflamatorios" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Alimentación</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>12 Mayo 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>7 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">La Dieta Antiinflamatoria: Alimentos Clave</h3>
+                        <p class="text-gray-600 mb-4">Descubre qué alimentos pueden ayudarte a reducir la inflamación crónica y mejorar tu salud general.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">María González</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo 2 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Reiki" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-xs font-medium">Reiki</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>5 Mayo 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>9 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Reiki para Principiantes: Guía Completa</h3>
+                        <p class="text-gray-600 mb-4">Todo lo que necesitas saber para comenzar con esta terapia energética milenaria y sus beneficios.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Sofía Ramírez</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo 3 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Suplementos naturales" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Naturopatía</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>28 Abril 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>12 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Suplementos Naturales: ¿Cuáles Realmente Funcionan?</h3>
+                        <p class="text-gray-600 mb-4">Análisis basado en evidencia científica de los suplementos naturales más populares y su eficacia.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Dr. Javier Ruiz</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo 4 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Medicina china" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">Investigación</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>15 Abril 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>15 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Medicina China Tradicional: Fundamentos Científicos</h3>
+                        <p class="text-gray-600 mb-4">Exploramos cómo la ciencia moderna está validando los principios de esta medicina milenaria.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/52.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Dra. Wei Li</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo 5 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Yoga" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">Consejos</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>3 Abril 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>5 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">5 Posturas de Yoga para Aliviar el Dolor de Espalda</h3>
+                        <p class="text-gray-600 mb-4">Secuencia sencilla que puedes hacer en casa para mejorar la movilidad y reducir molestias.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Juan Martínez</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Artículo 6 -->
+                <article class="bg-white rounded-xl overflow-hidden shadow-md article-card transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Aromaterapia" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="category-badge bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">Naturopatía</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>22 Marzo 2023</span>
+                            <span class="mx-2">•</span>
+                            <span>8 min lectura</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Aromaterapia: Guía de Aceites Esenciales para Principiantes</h3>
+                        <p class="text-gray-600 mb-4">Cómo usar los aceites esenciales más comunes para mejorar tu bienestar físico y emocional.</p>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/women/36.jpg" alt="Autor" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm font-medium">Elena Castillo</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            
+            <!-- Paginación -->
+            <div class="mt-12 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-green-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="px-4 py-2 border rounded-lg bg-green-600 text-white">1</button>
+                    <button class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-green-50">2</button>
+                    <button class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-green-50">3</button>
+                    <span class="px-2">...</span>
+                    <button class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-green-50">8</button>
+                    <button class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-green-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-green-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Suscríbete a nuestro Newsletter</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Recibe artículos exclusivos, consejos de expertos y descuentos especiales directamente en tu correo.</p>
+            <form class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Tu email" class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none text-gray-800">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-r-lg font-medium">
+                    Suscribirse
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer (igual que en base.html) -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <!-- Contenido del footer igual que en base.html -->
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Filtrado por categorías
+        document.querySelectorAll('.category-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                // Quitar activo de todos los botones
+                document.querySelectorAll('.category-filter').forEach(btn => {
+                    btn.classList.remove('bg-green-600', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-800', 'hover:bg-green-100');
+                });
+                
+                // Activar el botón clickeado
+                this.classList.add('bg-green-600', 'text-white');
+                this.classList.remove('bg-gray-100', 'text-gray-800', 'hover:bg-green-100');
+                
+                const category = this.dataset.category;
+                // Aquí iría la lógica para filtrar los artículos
+                console.log(`Filtrar por categoría: ${category}`);
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Modal de login/register (igual que en base.html)
+        // ... (código de los modales)
+    </script>
+	<script type="module">
+  import { initAuthStateListener } from 'C:\Users\xavie\OneDrive\Escritorio\feina\programas propios\Naturocare\assets\js/auth.js';
+  import { loadUserData } from 'C:\Users\xavie\OneDrive\Escritorio\feina\programas propios\Naturocare\assets\js/dashboard.js';
+  
+  initAuthStateListener(loadUserData);
+	</script>
+</body>
+</html>
