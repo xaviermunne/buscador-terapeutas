@@ -1,5 +1,5 @@
 import { login, register } from './auth.js';
-import { db } from './firebase/app.js';
+import { db } from './app.js';
 import { doc, setDoc } from "firebase/firestore";
 
 export function setupAuthUI() {
