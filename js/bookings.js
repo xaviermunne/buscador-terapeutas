@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Confirmar reserva
-    const confirmButton = document.querySelector('#booking-modal button.bg-green-600');
+    const confirmButton = document.getElementById('confirm-booking');
     confirmButton.addEventListener('click', function() {
         const therapistName = document.getElementById('modal-therapist-name').textContent;
         const selectedDate = document.querySelector('#booking-modal .grid.grid-cols-7 button.bg-green-600')?.textContent;
