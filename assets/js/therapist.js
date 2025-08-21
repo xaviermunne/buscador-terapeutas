@@ -1,4 +1,4 @@
-// assets/js/therapists.js
+// assets/js/therapist.js
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('therapists-container');
     
