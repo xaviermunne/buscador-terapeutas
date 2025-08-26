@@ -1,99 +1,41 @@
-import { db } from "./firebase-config.js";
-import { auth } from "./auth.js";
-
-// Crear nueva reserva
-export const createBooking = async (therapistId, date, time, notes, sessionType) => {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Usuario no autenticado");
-
-  try {
-    const bookingRef = await db.collection('bookings').add({
-      userId: user.uid,
-      therapistId,
-      date,
-      time,
-      notes,
-      sessionType,
-      status: 'confirmed',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+// Booking functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Selección de fecha
+    const dateButtons = document.querySelectorAll('#booking-modal .grid.grid-cols-7 button');
+    dateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            dateButtons.forEach(btn => btn.classList.remove('bg-green-600', 'text-white'));
+            this.classList.add('bg-green-600', 'text-white');
+        });
     });
 
-    // Enviar notificación al terapeuta
-    await db.collection('notifications').add({
-      userId: therapistId,
-      type: 'new_booking',
-      bookingId: bookingRef.id,
-      read: false,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    // Selección de hora
+    const timeButtons = document.querySelectorAll('#booking-modal .grid.grid-cols-3 button');
+    timeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            timeButtons.forEach(btn => btn.classList.remove('bg-green-600', 'text-white', 'border-green-600'));
+            this.classList.add('bg-green-600', 'text-white', 'border-green-600');
+        });
     });
 
-    return bookingRef.id;
-  } catch (error) {
-    console.error("Error al crear reserva:", error);
-    throw error;
-  }
-};
+    // Confirmar reserva
+    const confirmButton = document.querySelector('#booking-modal button.bg-green-600');
+    confirmButton.addEventListener('click', function() {
+        const therapistName = document.getElementById('modal-therapist-name').textContent;
+        const selectedDate = document.querySelector('#booking-modal .grid.grid-cols-7 button.bg-green-600')?.textContent;
+        const selectedTime = document.querySelector('#booking-modal .grid.grid-cols-3 button.bg-green-600')?.textContent;
+        const consultType = document.querySelector('#booking-modal input[name="consulta"]:checked')?.nextElementSibling.textContent;
+        const notes = document.getElementById('notes').value;
 
-// Obtener reservas del usuario
-export const getUserBookings = async (userId) => {
-  try {
-    const snapshot = await db.collection('bookings')
-      .where('userId', '==', userId)
-      .orderBy('date', 'desc')
-      .orderBy('time', 'desc')
-      .get();
+        if (!selectedDate || !selectedTime) {
+            alert('Por favor selecciona una fecha y hora para tu cita');
+            return;
+        }
 
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      date: doc.data().date.toDate().toLocaleDateString(),
-      time: doc.data().time
-    }));
-  } catch (error) {
-    console.error("Error al obtener reservas:", error);
-    throw error;
-  }
-};
-
-// Cancelar reserva
-export const cancelBooking = async (bookingId) => {
-  try {
-    await db.collection('bookings').doc(bookingId).update({
-      status: 'cancelled',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        // Aquí iría la lógica para guardar la reserva en Firebase
+        alert(`Reserva confirmada con ${therapistName} para el día ${selectedDate} a las ${selectedTime} (${consultType})`);
+        
+        bookingModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
     });
-  } catch (error) {
-    console.error("Error al cancelar reserva:", error);
-    throw error;
-  }
-};
-
-// Obtener disponibilidad del terapeuta
-export const getTherapistAvailability = async (therapistId, date) => {
-  try {
-    const therapistDoc = await db.collection('therapists').doc(therapistId).get();
-    const therapistData = therapistDoc.data();
-    
-    // Lógica para calcular disponibilidad (puedes personalizar)
-    const workingHours = therapistData.workingHours || {
-      start: '09:00',
-      end: '18:00',
-      breakStart: '13:00',
-      breakEnd: '15:00'
-    };
-
-    // Aquí iría la lógica para generar slots disponibles
-    return generateTimeSlots(workingHours); 
-  } catch (error) {
-    console.error("Error al obtener disponibilidad:", error);
-    throw error;
-  }
-};
-
-// Función auxiliar para generar horarios
-function generateTimeSlots(workingHours) {
-  const slots = [];
-  // Implementa tu lógica de generación de horarios
-  return slots;
-}
+});
